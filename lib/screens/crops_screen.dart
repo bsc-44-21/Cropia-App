@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/crops/calendar_strip.dart';
-import '../widgets/crops/activity_card.dart';
-import '../widgets/shared/section_title.dart';
+import 'package:provider/provider.dart';
+import '../providers/field_provider.dart';
+import 'field_form_screen.dart';
+import 'field_details_screen.dart';
 
 class CropsScreen extends StatelessWidget {
   const CropsScreen({super.key});
@@ -10,59 +11,72 @@ class CropsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crop Management', style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt_outlined),
-            onPressed: () {},
-          )
-        ],
+        title: const Text('My Fields', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            CalendarStrip(),
-            SizedBox(height: 24),
-            SectionTitle(title: 'Today\'s Activities'),
-            SizedBox(height: 12),
-            ActivityCard(
-              title: 'Apply Fertilizer',
-              subtitle: 'Maize Field A',
-              time: '10:00 AM',
-              icon: Icons.science,
-              color: Colors.purple,
-            ),
-            ActivityCard(
-              title: 'Inspect for Pests',
-              subtitle: 'Tomato Plot 1',
-              time: '02:00 PM',
-              icon: Icons.pest_control,
-              color: Colors.red,
-            ),
-            SizedBox(height: 24),
-            SectionTitle(title: 'Upcoming'),
-            SizedBox(height: 12),
-            ActivityCard(
-              title: 'Harvesting',
-              subtitle: 'Tomato Plot 2',
-              time: 'Tomorrow',
-              icon: Icons.agriculture,
-              color: Colors.orange,
-            ),
-            ActivityCard(
-              title: 'Irrigation',
-              subtitle: 'Maize Field A',
-              time: 'Wed, 14th',
-              icon: Icons.water_drop,
-              color: Colors.blue,
-            ),
-          ],
-        ),
+      body: Consumer<FieldProvider>(
+        builder: (context, fieldProvider, child) {
+          if (fieldProvider.fields.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.landscape_outlined, size: 80, color: Colors.grey.shade400),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No fields yet',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap the + button to create your first field.',
+                    style: TextStyle(color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: fieldProvider.fields.length,
+            itemBuilder: (context, index) {
+              final field = fieldProvider.fields[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: Colors.grey.shade200),
+                ),
+                elevation: 0,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(12),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.green.shade50,
+                    child: Icon(Icons.eco, color: Colors.green.shade700),
+                  ),
+                  title: Text(field.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text('${field.cropType} • ${field.sizeInAcres} Acres\n${field.location}'),
+                  isThreeLine: true,
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => FieldDetailsScreen(fieldId: field.id),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const FieldFormScreen()),
+          );
+        },
         backgroundColor: Colors.green.shade600,
         child: const Icon(Icons.add, color: Colors.white),
       ),

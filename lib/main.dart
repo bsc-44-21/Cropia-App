@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/auth/sign_in_screen.dart';
+import 'providers/field_provider.dart';
 
 void main() {
-  runApp(const CropiaApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FieldProvider()),
+      ],
+      child: const CropiaApp(),
+    ),
+  );
 }
 
 class CropiaApp extends StatelessWidget {
