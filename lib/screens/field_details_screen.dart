@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/field_model.dart';
+import '../models/crop_data.dart';
 import '../providers/field_provider.dart';
 import 'field_form_screen.dart';
 import '../widgets/fields/field_weather_header.dart';
@@ -19,8 +20,9 @@ class FieldDetailsScreen extends StatelessWidget {
       orElse: () => FieldModel(id: '', name: '', location: '', sizeInAcres: 0, cropType: '', plantingTime: DateTime.now(), activities: [])
     );
     
-    final bool isMaize = field.cropType.toLowerCase() == 'maize';
-    final String price = isMaize ? 'k4,000.00 / KG' : 'k15,000.00 / Crate';
+    final CropData cropData = CropData.getFor(field.cropType);
+    final double estimatedYield = field.sizeInAcres * cropData.yieldPerAcre;
+    final double estimatedRevenue = estimatedYield * cropData.pricePerUnit;
     
     // Automatically pop back if the field was deleted 
     if (field.id.isEmpty) {
@@ -97,7 +99,11 @@ class FieldDetailsScreen extends StatelessWidget {
                     const Divider(height: 24),
                     _buildInfoRow(Icons.square_foot, 'Size', '${field.sizeInAcres} Acres', Colors.orange),
                     const Divider(height: 24),
-                    _buildInfoRow(Icons.eco, 'Crop Type', '${field.cropType} ($price)', Colors.green),
+                    _buildInfoRow(Icons.eco, 'Crop Type', '${field.cropType} (k${cropData.pricePerUnit.toStringAsFixed(0)} / ${cropData.yieldUnit})', Colors.green),
+                    const Divider(height: 24),
+                    _buildInfoRow(Icons.analytics_outlined, 'Est. Yield', '${estimatedYield.toStringAsFixed(0)} ${cropData.yieldUnit}', Colors.teal),
+                    const Divider(height: 24),
+                    _buildInfoRow(Icons.payments_outlined, 'Est. Revenue', 'k${estimatedRevenue.toStringAsFixed(2)}', Colors.indigo),
                     const Divider(height: 24),
                     _buildInfoRow(
                       Icons.calendar_today, 
