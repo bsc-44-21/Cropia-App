@@ -80,32 +80,31 @@ class FieldDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildDetailCard(
-              icon: Icons.location_on,
-              title: 'Location',
-              value: field.location,
-              color: Colors.blue,
-            ),
-            const SizedBox(height: 16),
-            _buildDetailCard(
-              icon: Icons.square_foot,
-              title: 'Size',
-              value: '${field.sizeInAcres} Acres',
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 16),
-            _buildDetailCard(
-              icon: Icons.eco,
-              title: 'Crop Type',
-              value: field.cropType,
-              color: Colors.green,
-            ),
-            const SizedBox(height: 16),
-            _buildDetailCard(
-              icon: Icons.calendar_today,
-              title: 'Planting Time',
-              value: '${field.plantingTime.year}-${field.plantingTime.month.toString().padLeft(2, '0')}-${field.plantingTime.day.toString().padLeft(2, '0')}',
-              color: Colors.purple,
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    _buildInfoRow(Icons.location_on, 'Location', field.location, Colors.blue),
+                    const Divider(height: 24),
+                    _buildInfoRow(Icons.square_foot, 'Size', '${field.sizeInAcres} Acres', Colors.orange),
+                    const Divider(height: 24),
+                    _buildInfoRow(Icons.eco, 'Crop Type', field.cropType, Colors.green),
+                    const Divider(height: 24),
+                    _buildInfoRow(
+                      Icons.calendar_today, 
+                      'Planting Time', 
+                      '${field.plantingTime.year}-${field.plantingTime.month.toString().padLeft(2, '0')}-${field.plantingTime.day.toString().padLeft(2, '0')}', 
+                      Colors.purple
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 32),
             const Text(
@@ -170,39 +169,26 @@ class FieldDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailCard({required IconData icon, required String title, required String value, required Color color}) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade200),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
+  Widget _buildInfoRow(IconData icon, String title, String value, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 32),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
-                  const SizedBox(height: 4),
-                  Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                ],
-              ),
-            ),
+            Text(title, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
-      ),
+      ],
     );
   }
 }
