@@ -3,7 +3,12 @@ import 'package:provider/provider.dart';
 import 'screens/auth/sign_in_screen.dart';
 import 'providers/field_provider.dart';
 
-void main() {
+import 'services/notification_service.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  
   runApp(
     MultiProvider(
       providers: [

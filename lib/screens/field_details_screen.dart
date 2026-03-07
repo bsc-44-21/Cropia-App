@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/field_model.dart';
+import '../models/field_activity.dart';
 import '../models/crop_data.dart';
 import '../providers/field_provider.dart';
 import 'field_form_screen.dart';
 import '../widgets/fields/field_weather_header.dart';
 import '../widgets/fields/weekly_alerts_card.dart';
+import '../services/notification_service.dart';
 
 class FieldDetailsScreen extends StatelessWidget {
   final String fieldId;
@@ -38,6 +40,27 @@ class FieldDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(field.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_active_outlined, color: Colors.blue),
+            tooltip: 'Test Notification',
+            onPressed: () {
+              // Trigger a test notification for 5 seconds from now
+              final testActivity = field.activities.isEmpty 
+                  ? FieldActivity(title: 'Test Task', date: DateTime.now())
+                  : field.activities.first;
+              
+              NotificationService.scheduleTaskNotification(
+                id: 999, // Unique test ID
+                fieldName: field.name,
+                location: field.location,
+                activity: testActivity.copyWith(date: DateTime.now().add(const Duration(seconds: 5))),
+              );
+              
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Test notification scheduled for 5 seconds from now!')),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {

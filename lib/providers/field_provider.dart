@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/field_model.dart';
 import '../models/field_activity.dart';
+import '../services/notification_service.dart';
 
 class FieldProvider with ChangeNotifier {
   final List<FieldModel> _fields = [];
@@ -32,12 +33,35 @@ class FieldProvider with ChangeNotifier {
       field = field.copyWith(activities: _generateSchedule(field.cropType, field.plantingTime));
     }
     _fields.add(field);
+    _scheduleNotificationsForField(field);
     notifyListeners();
+  }
+
+  void _scheduleNotificationsForField(FieldModel field) {
+    for (int i = 0; i < field.activities.length; i++) {
+      final activity = field.activities[i];
+      if (!activity.isCompleted) {
+        NotificationService.scheduleTaskNotification(
+          id: (field.id + i.toString()).hashCode,
+          fieldName: field.name,
+          location: field.location,
+          activity: activity,
+        );
+      }
+    }
+  }
+
+  void _cancelNotificationsForField(FieldModel field) {
+    for (int i = 0; i < field.activities.length; i++) {
+      NotificationService.cancelNotification((field.id + i.toString()).hashCode);
+    }
   }
 
   void updateField(FieldModel updatedField) {
     final index = _fields.indexWhere((field) => field.id == updatedField.id);
     if (index >= 0) {
+      _cancelNotificationsForField(_fields[index]);
+      
       _fields[index] = updatedField;
       // Recalculate activities if planting time or crop changed
       if (updatedField.activities.isEmpty || 
@@ -47,11 +71,14 @@ class FieldProvider with ChangeNotifier {
            activities: _generateSchedule(updatedField.cropType, updatedField.plantingTime)
          );
       }
+      _scheduleNotificationsForField(_fields[index]);
       notifyListeners();
     }
   }
 
   void deleteField(String id) {
+    final field = _fields.firstWhere((f) => f.id == id);
+    _cancelNotificationsForField(field);
     _fields.removeWhere((field) => field.id == id);
     notifyListeners();
   }
@@ -64,7 +91,23 @@ class FieldProvider with ChangeNotifier {
       activities[activityIndex] = activities[activityIndex].copyWith(
         isCompleted: !activities[activityIndex].isCompleted
       );
-      _fields[fieldIndex] = field.copyWith(activities: activities);
+      
+      final updatedField = field.copyWith(activities: activities);
+      _fields[fieldIndex] = updatedField;
+      
+      // Update notification status
+      final notificationId = (fieldId + activityIndex.toString()).hashCode;
+      if (activities[activityIndex].isCompleted) {
+        NotificationService.cancelNotification(notificationId);
+      } else {
+        NotificationService.scheduleTaskNotification(
+          id: notificationId,
+          fieldName: field.name,
+          location: field.location,
+          activity: activities[activityIndex],
+        );
+      }
+      
       notifyListeners();
     }
   }
