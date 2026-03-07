@@ -49,21 +49,58 @@ class FieldDetailsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
+              String inputName = '';
               showDialog(
                 context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('Delete Field'),
-                  content: Text('Are you sure you want to delete ${field.name}?'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-                    TextButton(
-                      onPressed: () {
-                        context.read<FieldProvider>().deleteField(field.id);
-                        Navigator.of(ctx).pop();
-                      },
-                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
+                builder: (ctx) => StatefulBuilder(
+                  builder: (context, setDialogState) {
+                    final bool isMatch = inputName == field.name;
+                    return AlertDialog(
+                      title: const Text('Delete Field'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Are you sure you want to delete ${field.name}? This action cannot be undone.'),
+                          const SizedBox(height: 16),
+                          Text(
+                            'To confirm, type "${field.name}" below:',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            decoration: const InputDecoration(
+                              hintText: 'Type field name',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                            onChanged: (val) {
+                              setDialogState(() => inputName = val);
+                            },
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: isMatch
+                              ? () {
+                                  context.read<FieldProvider>().deleteField(field.id);
+                                  Navigator.of(ctx).pop();
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('Delete Field'),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               );
             },
