@@ -3,7 +3,7 @@ import 'home_screen.dart';
 import 'crops_screen.dart';
 import 'ai_screen.dart';
 import 'detect_screen.dart';
-import 'market_screen.dart';
+import 'knowledge_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -20,7 +20,7 @@ class _MainNavigationState extends State<MainNavigation> {
     CropsScreen(),
     AiScreen(),
     DetectScreen(),
-    MarketScreen(),
+    KnowledgeScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -70,8 +70,8 @@ class _MainNavigationState extends State<MainNavigation> {
               label: 'DETECT',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.trending_up),
-              label: 'MARKET',
+              icon: Icon(Icons.school),
+              label: 'LEARN',
             ),
           ],
         ),

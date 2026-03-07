@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/main_navigation.dart';
+import 'screens/auth/sign_in_screen.dart';
 
 void main() {
   runApp(const CropiaApp());
@@ -27,7 +27,7 @@ class CropiaApp extends StatelessWidget {
           foregroundColor: Colors.black87,
         ),
       ),
-      home: const MainNavigation(),
+      home: const SignInScreen(),
     );
   }
 }
