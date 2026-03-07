@@ -13,6 +13,7 @@ class PremiumFieldCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isMaize = field.cropType.toLowerCase() == 'maize';
+    final String price = isMaize ? 'k4,000.00 / KG' : 'k15,000.00 / Crate';
     final int daysSince = DateTime.now().difference(field.plantingTime).inDays;
     
     // Check if any activities are past due and not completed
@@ -91,6 +92,15 @@ class PremiumFieldCard extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Market Price: $price',
+                    style: TextStyle(
+                      color: Colors.blue.shade700,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 8),

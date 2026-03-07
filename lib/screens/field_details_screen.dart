@@ -19,6 +19,9 @@ class FieldDetailsScreen extends StatelessWidget {
       orElse: () => FieldModel(id: '', name: '', location: '', sizeInAcres: 0, cropType: '', plantingTime: DateTime.now(), activities: [])
     );
     
+    final bool isMaize = field.cropType.toLowerCase() == 'maize';
+    final String price = isMaize ? 'k4,000.00 / KG' : 'k15,000.00 / Crate';
+    
     // Automatically pop back if the field was deleted 
     if (field.id.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -94,7 +97,7 @@ class FieldDetailsScreen extends StatelessWidget {
                     const Divider(height: 24),
                     _buildInfoRow(Icons.square_foot, 'Size', '${field.sizeInAcres} Acres', Colors.orange),
                     const Divider(height: 24),
-                    _buildInfoRow(Icons.eco, 'Crop Type', field.cropType, Colors.green),
+                    _buildInfoRow(Icons.eco, 'Crop Type', '${field.cropType} ($price)', Colors.green),
                     const Divider(height: 24),
                     _buildInfoRow(
                       Icons.calendar_today, 
