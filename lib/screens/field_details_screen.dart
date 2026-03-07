@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../models/field_model.dart';
 import '../providers/field_provider.dart';
 import 'field_form_screen.dart';
+import '../widgets/fields/field_weather_header.dart';
+import '../widgets/fields/weekly_alerts_card.dart';
 
 class FieldDetailsScreen extends StatelessWidget {
   final String fieldId;
@@ -66,6 +68,18 @@ class FieldDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            FieldWeatherHeader(location: field.location),
+            const WeeklyAlertsCard(),
+            const SizedBox(height: 24),
+            const Text(
+              'Field Details',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
             _buildDetailCard(
               icon: Icons.location_on,
               title: 'Location',
