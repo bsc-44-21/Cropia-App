@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/knowledge/guide_category_card.dart';
 import '../../widgets/knowledge/video_tutorial_card.dart';
 import '../../widgets/shared/section_title.dart';
-import '../../widgets/ai/article_card.dart'; // Reusing from AI screen
+import '../../widgets/shared/article_card.dart';
 
 class KnowledgeScreen extends StatelessWidget {
   const KnowledgeScreen({super.key});

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'crops_screen.dart';
-import 'ai_screen.dart';
 import 'detect_screen.dart';
 import 'knowledge_screen.dart';
 
@@ -18,7 +17,6 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _screens = const [
     HomeScreen(),
     CropsScreen(),
-    AiScreen(),
     DetectScreen(),
     KnowledgeScreen(),
   ];
@@ -59,11 +57,7 @@ class _MainNavigationState extends State<MainNavigation> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.eco_rounded),
-              label: 'CROPS',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.auto_awesome),
-              label: 'AI',
+              label: 'FIELDS',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.document_scanner_outlined),
