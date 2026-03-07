@@ -1,3 +1,5 @@
+import 'field_activity.dart';
+
 class FieldModel {
   final String id;
   final String name;
@@ -5,6 +7,7 @@ class FieldModel {
   final double sizeInAcres;
   final String cropType;
   final DateTime plantingTime;
+  final List<FieldActivity> activities;
 
   FieldModel({
     required this.id,
@@ -13,6 +16,7 @@ class FieldModel {
     required this.sizeInAcres,
     required this.cropType,
     required this.plantingTime,
+    required this.activities,
   });
 
   FieldModel copyWith({
@@ -22,6 +26,7 @@ class FieldModel {
     double? sizeInAcres,
     String? cropType,
     DateTime? plantingTime,
+    List<FieldActivity>? activities,
   }) {
     return FieldModel(
       id: id ?? this.id,
@@ -30,6 +35,7 @@ class FieldModel {
       sizeInAcres: sizeInAcres ?? this.sizeInAcres,
       cropType: cropType ?? this.cropType,
       plantingTime: plantingTime ?? this.plantingTime,
+      activities: activities ?? this.activities,
     );
   }
 }

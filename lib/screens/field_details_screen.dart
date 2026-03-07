@@ -12,7 +12,10 @@ class FieldDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // We listen to changes so if we edit the field, this screen updates
-    final field = context.watch<FieldProvider>().fields.firstWhere((f) => f.id == fieldId, orElse: () => FieldModel(id: '', name: '', location: '', sizeInAcres: 0, cropType: '', plantingTime: DateTime.now()));
+    final field = context.watch<FieldProvider>().fields.firstWhere(
+      (f) => f.id == fieldId, 
+      orElse: () => FieldModel(id: '', name: '', location: '', sizeInAcres: 0, cropType: '', plantingTime: DateTime.now(), activities: [])
+    );
     
     // Automatically pop back if the field was deleted 
     if (field.id.isEmpty) {
@@ -90,6 +93,63 @@ class FieldDetailsScreen extends StatelessWidget {
               value: '${field.plantingTime.year}-${field.plantingTime.month.toString().padLeft(2, '0')}-${field.plantingTime.day.toString().padLeft(2, '0')}',
               color: Colors.purple,
             ),
+            const SizedBox(height: 32),
+            const Text(
+              'Crop Schedule',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+            ),
+            const SizedBox(height: 16),
+            if (field.activities.isEmpty)
+              const Text('No activities scheduled.')
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: field.activities.length,
+                itemBuilder: (context, index) {
+                  final activity = field.activities[index];
+                  final isPastDue = activity.date.isBefore(DateTime.now().subtract(const Duration(days: 1))) && !activity.isCompleted;
+                  
+                  return Card(
+                    elevation: 0,
+                    margin: const EdgeInsets.only(bottom: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: isPastDue ? Colors.red.shade200 : Colors.grey.shade200,
+                        width: isPastDue ? 2 : 1,
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: Checkbox(
+                        value: activity.isCompleted,
+                        activeColor: Colors.green,
+                        onChanged: (bool? value) {
+                          context.read<FieldProvider>().toggleActivityCompletion(field.id, index);
+                        },
+                      ),
+                      title: Text(
+                        activity.title,
+                        style: TextStyle(
+                          decoration: activity.isCompleted ? TextDecoration.lineThrough : null,
+                          color: activity.isCompleted ? Colors.grey : (isPastDue ? Colors.red.shade800 : Colors.black87),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${activity.date.year}-${activity.date.month.toString().padLeft(2, '0')}-${activity.date.day.toString().padLeft(2, '0')}',
+                        style: TextStyle(
+                          decoration: activity.isCompleted ? TextDecoration.lineThrough : null,
+                        ),
+                      ),
+                      trailing: isPastDue
+                          ? const Icon(Icons.warning_amber_rounded, color: Colors.red)
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -110,7 +170,7 @@ class FieldDetailsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 32),

@@ -53,6 +53,7 @@ class _FieldFormScreenState extends State<FieldFormScreen> {
         sizeInAcres: double.parse(_sizeController.text.trim()),
         cropType: _selectedCropType,
         plantingTime: _selectedDate,
+        activities: widget.existingField?.activities ?? [],
       );
 
       if (widget.existingField == null) {
@@ -129,7 +130,7 @@ class _FieldFormScreenState extends State<FieldFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedCropType,
+                initialValue: _selectedCropType,
                 decoration: InputDecoration(
                   labelText: 'Crop Type',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
