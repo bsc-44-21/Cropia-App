@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../services/weather_service.dart';
 
 class WeeklyAlertsCard extends StatelessWidget {
-  const WeeklyAlertsCard({super.key});
+  final String location;
+
+  const WeeklyAlertsCard({
+    super.key,
+    required this.location,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final alerts = [
-      {'day': 'Mon', 'alert': 'Ideal Spraying', 'type': 'Good'},
-      {'day': 'Tue', 'alert': 'Light Rain', 'type': 'Warning'},
-      {'day': 'Wed', 'alert': 'High Heat', 'type': 'Caution'},
-      {'day': 'Thu', 'alert': 'Clear Sky', 'type': 'Good'},
-      {'day': 'Fri', 'alert': 'Heavy Rain', 'type': 'Warning'},
-      {'day': 'Sat', 'alert': 'Moderate Wind', 'type': 'Caution'},
-      {'day': 'Sun', 'alert': 'Sunny Day', 'type': 'Good'},
-    ];
+    final alerts = WeatherService.getWeeklyAlerts(location);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +38,7 @@ class WeeklyAlertsCard extends StatelessWidget {
               Color iconColor;
               IconData icon;
 
-              switch (alert['type']) {
+              switch (alert.type) {
                 case 'Good':
                   bgColor = Colors.green.shade50;
                   iconColor = Colors.green.shade600;
@@ -72,7 +70,7 @@ class WeeklyAlertsCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      alert['day']!,
+                      alert.day,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
@@ -82,8 +80,10 @@ class WeeklyAlertsCard extends StatelessWidget {
                     Icon(icon, color: iconColor),
                     const SizedBox(height: 8),
                     Text(
-                      alert['alert']!,
+                      alert.alert,
                       textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,

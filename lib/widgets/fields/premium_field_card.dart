@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/field_model.dart';
 import '../../models/crop_data.dart';
+import '../../services/weather_service.dart';
 import '../../screens/field_details_screen.dart';
 
 class PremiumFieldCard extends StatelessWidget {
@@ -32,9 +33,11 @@ class PremiumFieldCard extends StatelessWidget {
     final nextActivity = nextActivityIndex != -1 ? field.activities[nextActivityIndex] : null;
     final int? daysToNext = nextActivity?.date.difference(DateTime.now()).inDays;
 
-    // Weather Advisory mocked (Simulating rain forecast)
-    // In a real app, this would check a WeatherProvider
-    final bool willRainSoon = true; // Mocked for demonstration
+    // Weather Advisory logic using location-specific alerts
+    final alerts = WeatherService.getWeeklyAlerts(field.location);
+    // Let's check today's/tomorrow's alert (simplified mock logic)
+    final bool willRainSoon = alerts.any((a) => a.alert.toLowerCase().contains('rain'));
+    
     final bool weatherConflict = willRainSoon && 
         (nextActivity?.title.toLowerCase().contains('fertilizer') == true || 
          nextActivity?.title.toLowerCase().contains('spraying') == true);

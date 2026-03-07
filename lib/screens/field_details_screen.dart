@@ -74,7 +74,7 @@ class FieldDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FieldWeatherHeader(location: field.location),
-            const WeeklyAlertsCard(),
+            WeeklyAlertsCard(location: field.location),
             const SizedBox(height: 24),
             const Text(
               'Field Details',

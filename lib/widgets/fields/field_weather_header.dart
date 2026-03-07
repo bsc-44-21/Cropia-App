@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/weather_service.dart';
 
 class FieldWeatherHeader extends StatelessWidget {
   final String location;
@@ -10,6 +11,8 @@ class FieldWeatherHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final weather = WeatherService.getCurrentWeather(location);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -38,28 +41,31 @@ class FieldWeatherHeader extends StatelessWidget {
                   children: [
                     const Icon(Icons.location_on, color: Colors.white, size: 16),
                     const SizedBox(width: 4),
-                    Text(
-                      location,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Text(
+                        location,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  '26°C',
-                  style: TextStyle(
+                Text(
+                  '${weather.temperature.toStringAsFixed(0)}°C',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  'Mostly Sunny',
-                  style: TextStyle(
+                Text(
+                  weather.condition,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -68,9 +74,9 @@ class FieldWeatherHeader extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(
-            Icons.wb_sunny,
-            color: Colors.yellow,
+          Icon(
+            weather.icon,
+            color: weather.icon == Icons.wb_sunny ? Colors.yellow : Colors.white,
             size: 80,
           ),
         ],
