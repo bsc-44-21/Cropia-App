@@ -29,7 +29,7 @@ class CropsScreen extends StatelessWidget {
             SizedBox(height: 12),
             ActivityCard(
               title: 'Apply Fertilizer',
-              subtitle: 'Corn Field A',
+              subtitle: 'Maize Field A',
               time: '10:00 AM',
               icon: Icons.science,
               color: Colors.purple,
@@ -46,14 +46,14 @@ class CropsScreen extends StatelessWidget {
             SizedBox(height: 12),
             ActivityCard(
               title: 'Harvesting',
-              subtitle: 'Wheat Field B',
+              subtitle: 'Tomato Plot 2',
               time: 'Tomorrow',
               icon: Icons.agriculture,
               color: Colors.orange,
             ),
             ActivityCard(
               title: 'Irrigation',
-              subtitle: 'Corn Field A',
+              subtitle: 'Maize Field A',
               time: 'Wed, 14th',
               icon: Icons.water_drop,
               color: Colors.blue,

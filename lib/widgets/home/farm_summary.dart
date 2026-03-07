@@ -21,7 +21,7 @@ class FarmSummary extends StatelessWidget {
           children: [
             Expanded(child: _buildSummaryBox('Fields', '4 Active', Icons.landscape, Colors.green)),
             const SizedBox(width: 12),
-            Expanded(child: _buildSummaryBox('Crops', 'Wheat, Corn', Icons.eco, Colors.orange)),
+            Expanded(child: _buildSummaryBox('Crops', 'Tomato, Maize', Icons.eco, Colors.orange)),
           ],
         ),
       ],

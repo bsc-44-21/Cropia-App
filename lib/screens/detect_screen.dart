@@ -55,7 +55,7 @@ class DetectScreen extends StatelessWidget {
                 ),
                 const ScanResultCard(
                   disease: 'Healthy Crop',
-                  location: 'Corn Field A',
+                  location: 'Maize Field A',
                   risk: 'No Action Needed',
                   color: Colors.green,
                 ),
