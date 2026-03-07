@@ -28,7 +28,7 @@ class WeeklyAlertsCard extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 110,
+          height: 130,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: alerts.length,

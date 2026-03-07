@@ -23,6 +23,8 @@ class FieldDetailsScreen extends StatelessWidget {
     final CropData cropData = CropData.getFor(field.cropType);
     final double estimatedYield = field.sizeInAcres * cropData.yieldPerAcre;
     final double estimatedRevenue = estimatedYield * cropData.pricePerUnit;
+    final int daysSince = DateTime.now().difference(field.plantingTime).inDays;
+    final double progress = (daysSince / cropData.durationDays).clamp(0.0, 1.0);
     
     // Automatically pop back if the field was deleted 
     if (field.id.isEmpty) {
@@ -76,6 +78,68 @@ class FieldDetailsScreen extends StatelessWidget {
             FieldWeatherHeader(location: field.location),
             WeeklyAlertsCard(location: field.location),
             const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.grey.shade100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Growth Stage',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
+                      ),
+                      Text(
+                        '${(progress * 100).toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.green.shade50,
+                      color: Colors.green.shade500,
+                      minHeight: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Day $daysSince of ${cropData.durationDays}',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
+                      ),
+                      Text(
+                        '${cropData.durationDays - daysSince} days left',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.green.shade600),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
             const Text(
               'Field Details',
               style: TextStyle(
@@ -99,11 +163,11 @@ class FieldDetailsScreen extends StatelessWidget {
                     const Divider(height: 24),
                     _buildInfoRow(Icons.square_foot, 'Size', '${field.sizeInAcres} Acres', Colors.orange),
                     const Divider(height: 24),
-                    _buildInfoRow(Icons.eco, 'Crop Type', '${field.cropType} (k${cropData.pricePerUnit.toStringAsFixed(0)} / ${cropData.yieldUnit})', Colors.green),
+                    _buildInfoRow(Icons.eco, 'Crop Type', field.cropType, Colors.green),
                     const Divider(height: 24),
                     _buildInfoRow(Icons.analytics_outlined, 'Est. Yield', '${estimatedYield.toStringAsFixed(0)} ${cropData.yieldUnit}', Colors.teal),
                     const Divider(height: 24),
-                    _buildInfoRow(Icons.payments_outlined, 'Est. Revenue', 'k${estimatedRevenue.toStringAsFixed(2)}', Colors.indigo),
+                    _buildInfoRow(Icons.payments_outlined, 'Est. Revenue', 'k${estimatedRevenue.toStringAsFixed(2)}', Colors.green.shade700),
                     const Divider(height: 24),
                     _buildInfoRow(
                       Icons.calendar_today, 
