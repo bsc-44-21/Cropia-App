@@ -88,17 +88,20 @@ class PremiumFieldCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        field.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      Expanded(
+                        child: Text(
+                          field.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
-                      if (hasAlert)
+                      if (hasAlert) ...[
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(
@@ -107,6 +110,7 @@ class PremiumFieldCard extends StatelessWidget {
                           ),
                           child: const Icon(Icons.priority_high, color: Colors.white, size: 10),
                         ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -119,16 +123,19 @@ class PremiumFieldCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Market Price: k${cropData.pricePerUnit.toStringAsFixed(0)} / ${cropData.yieldUnit}',
-                        style: TextStyle(
-                          color: Colors.blue.shade700,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Text(
+                          'Market Price: k${cropData.pricePerUnit.toStringAsFixed(0)} / ${cropData.yieldUnit}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         'Est. Revenue: $revenueFormatted',
                         style: TextStyle(
@@ -151,16 +158,19 @@ class PremiumFieldCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Day $daysSince of ${cropData.durationDays}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade600,
+                      Expanded(
+                        child: Text(
+                          'Day $daysSince of ${cropData.durationDays}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         '${(progress * 100).toStringAsFixed(0)}%',
                         style: TextStyle(
