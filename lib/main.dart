@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/auth/sign_in_screen.dart';
+import 'providers/field_provider.dart';
 import 'screens/main_navigation.dart';
 import 'services/supabase.dart';
 import 'guards/auth_provider.dart';
+import 'services/notification_service.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseService.initialize();
-  runApp(const CropiaApp());
+  await NotificationService.init();
+  
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => FieldProvider()),
+      ],
+      child: const CropiaApp(),
+    ),
+  );
 }
 
 class CropiaApp extends StatelessWidget {
