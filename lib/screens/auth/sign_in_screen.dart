@@ -1,16 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/auth/auth_text_field.dart';
 import '../../widgets/auth/auth_button.dart';
 import '../main_navigation.dart';
 import 'sign_up_screen.dart';
+import '../../guards/auth_provider.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
-  void _navigateToHome(BuildContext context) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const MainNavigation()),
-    );
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _signIn() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      // Navigation will be handled by AuthWrapper
+    } catch (e) {
+      print('Sign in error: $e');
+      if (!mounted) return;
+      if (e is AuthApiException && e.code == 'email_not_confirmed') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign in successful, but please confirm your email for full access.')),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => MainNavigation()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign in failed: ${e.toString()}')),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   void _navigateToSignUp(BuildContext context) {
@@ -52,14 +101,16 @@ class SignInScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 48),
-                const AuthTextField(
+                AuthTextField(
+                  controller: _emailController,
                   label: 'Email',
                   hint: 'Enter your email',
                   prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
-                const AuthTextField(
+                AuthTextField(
+                  controller: _passwordController,
                   label: 'Password',
                   hint: 'Enter your password',
                   prefixIcon: Icons.lock_outline,
@@ -82,7 +133,8 @@ class SignInScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 AuthButton(
                   text: 'Sign In',
-                  onPressed: () => _navigateToHome(context),
+                  onPressed: _isLoading ? null : _signIn,
+                  isLoading: _isLoading,
                 ),
                 const SizedBox(height: 24),
                 Row(
