@@ -14,7 +14,7 @@ class AuthProvider with ChangeNotifier {
   AuthProvider() {
     _init();
   }
-  
+
 void _init() {
     _user = _authService.currentUser;
     _isLoading = false;
@@ -26,3 +26,32 @@ void _init() {
       notifyListeners();
     });
   }
+  
+  Future<void> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    await _authService.signUp(
+      name: name,
+      email: email,
+      password: password,
+    );
+    // After successful sign up, automatically sign in
+    await signIn(email: email, password: password);
+  }
+
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
+    await _authService.signIn(
+      email: email,
+      password: password,
+    );
+  }
+
+  Future<void> signOut() async {
+    await _authService.signOut();
+  }
+}
