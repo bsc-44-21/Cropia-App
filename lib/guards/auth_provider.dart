@@ -14,3 +14,15 @@ class AuthProvider with ChangeNotifier {
   AuthProvider() {
     _init();
   }
+  
+void _init() {
+    _user = _authService.currentUser;
+    _isLoading = false;
+    notifyListeners();
+
+    _authService.authStateChanges.listen((event) {
+      _user = event.session?.user;
+      _isLoading = false;
+      notifyListeners();
+    });
+  }
