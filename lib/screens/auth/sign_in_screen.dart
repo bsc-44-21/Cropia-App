@@ -6,6 +6,7 @@ import '../../widgets/auth/auth_button.dart';
 import '../main_navigation.dart';
 import 'sign_up_screen.dart';
 import '../../guards/auth_provider.dart';
+import 'forgot_password_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -159,9 +160,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // Implement forgot password logic here if needed
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Forgot password feature coming soon!')),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ForgotPasswordScreen(),
+                          ),
                         );
                       },
                       child: Text(

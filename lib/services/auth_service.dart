@@ -28,6 +28,28 @@ class AuthService {
     return response;
   }
 
+  Future<void> resetPassword(String email) async {
+    await _client.auth.resetPasswordForEmail(email);
+  }
+
+  Future<AuthResponse> verifyOtp({
+    required String email,
+    required String token,
+    required OtpType type,
+  }) async {
+    return await _client.auth.verifyOTP(
+      email: email,
+      token: token,
+      type: type,
+    );
+  }
+
+  Future<UserResponse> updatePassword(String newPassword) async {
+    return await _client.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
+
   Future<void> signOut() async {
     await _client.auth.signOut();
   }

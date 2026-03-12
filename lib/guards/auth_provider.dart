@@ -49,6 +49,25 @@ void _init() {
     );
   }
 
+  Future<void> resetPassword(String email) async {
+    await _authService.resetPassword(email);
+  }
+
+  Future<void> verifyOtp({
+    required String email,
+    required String token,
+  }) async {
+    await _authService.verifyOtp(
+      email: email,
+      token: token,
+      type: OtpType.recovery,
+    );
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    await _authService.updatePassword(newPassword);
+  }
+
   Future<void> signOut() async {
     await _authService.signOut();
   }
