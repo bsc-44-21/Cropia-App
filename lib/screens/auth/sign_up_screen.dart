@@ -41,7 +41,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      // Navigation will be handled by AuthWrapper
+      
+      if (!mounted) return;
+      
+      // Show success message and navigate back to Sign In
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully! Please sign in.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      Navigator.of(context).pop();
+      
     } catch (e) {
       print('Sign up error: $e');
       if (!mounted) return;
@@ -52,9 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             backgroundColor: Colors.orange,
           ),
         );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MainNavigation()),
-        );
+        Navigator.of(context).pop();
       } else {
         String errorMessage = 'Sign up failed';
         if (e is AuthException) {
@@ -84,14 +94,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => _navigateBack(context),
-        ),
-      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

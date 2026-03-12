@@ -37,8 +37,6 @@ void _init() {
       email: email,
       password: password,
     );
-    // After successful sign up, automatically sign in
-    await signIn(email: email, password: password);
   }
 
   Future<void> signIn({
