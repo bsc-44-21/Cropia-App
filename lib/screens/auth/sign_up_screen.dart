@@ -18,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -25,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -165,14 +167,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     hint: 'Create a password',
                     prefixIcon: Icons.lock_outline,
                     isPassword: true,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _signUp(),
+                    textInputAction: TextInputAction.next,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a password';
                       }
                       if (value.length < 6) {
                         return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextField(
+                    controller: _confirmPasswordController,
+                    label: 'Confirm Password',
+                    hint: 'Re-enter your password',
+                    prefixIcon: Icons.lock_outline,
+                    isPassword: true,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => _signUp(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your password';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Passwords do not match';
                       }
                       return null;
                     },
