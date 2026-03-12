@@ -14,6 +14,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -28,12 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
-    if (_nameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
@@ -51,18 +47,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       if (e is AuthApiException && e.code == 'email_not_confirmed') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign up successful, but please confirm your email for full access.')),
+          const SnackBar(
+            content: Text('Sign up successful, but please confirm your email for full access.'),
+            backgroundColor: Colors.orange,
+          ),
         );
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => MainNavigation()),
         );
       } else {
+        String errorMessage = 'Sign up failed';
+        if (e is AuthException) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = e.toString();
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign up failed: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red.shade700,
+          ),
         );
       }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -86,79 +96,113 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Icon(Icons.person_add_outlined, size: 64, color: Colors.green.shade600),
-                const SizedBox(height: 16),
-                const Text(
-                  'Create an Account',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Hero(
+                    tag: 'app_logo',
+                    child: Icon(Icons.person_add_outlined, size: 64, color: Colors.green.shade600),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Join Cropia directly to manage your farm',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 48),
-                AuthTextField(
-                  controller: _nameController,
-                  label: 'Full Name',
-                  hint: 'Enter your full name',
-                  prefixIcon: Icons.person_outline,
-                ),
-                const SizedBox(height: 20),
-                AuthTextField(
-                  controller: _emailController,
-                  label: 'Email',
-                  hint: 'Enter your email',
-                  prefixIcon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 20),
-                AuthTextField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  hint: 'Create a password',
-                  prefixIcon: Icons.lock_outline,
-                  isPassword: true,
-                ),
-                const SizedBox(height: 40),
-                AuthButton(
-                  text: 'Sign Up',
-                  onPressed: _isLoading ? null : _signUp,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: TextStyle(color: Colors.grey.shade600),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Create an Account',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
-                    TextButton(
-                      onPressed: () => _navigateBack(context),
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Join Cropia directly to manage your farm',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  AuthTextField(
+                    controller: _nameController,
+                    label: 'Full Name',
+                    hint: 'Enter your full name',
+                    prefixIcon: Icons.person_outline,
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextField(
+                    controller: _emailController,
+                    label: 'Email',
+                    hint: 'Enter your email',
+                    prefixIcon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextField(
+                    controller: _passwordController,
+                    label: 'Password',
+                    hint: 'Create a password',
+                    prefixIcon: Icons.lock_outline,
+                    isPassword: true,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => _signUp(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 40),
+                  AuthButton(
+                    text: 'Sign Up',
+                    onPressed: _isLoading ? null : _signUp,
+                    isLoading: _isLoading,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account?',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                      TextButton(
+                        onPressed: () => _navigateBack(context),
+                        child: Text(
+                          'Sign In',
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
