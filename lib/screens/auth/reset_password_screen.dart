@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/auth/auth_text_field.dart';
@@ -21,16 +22,57 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   
   bool _isOtpVerified = false;
   bool _isLoading = false;
+  
+  Timer? _timer;
+  int _secondsRemaining = 0;
 
   @override
   void dispose() {
     _otpController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
+  void _startResendTimer() {
+    setState(() => _secondsRemaining = 60);
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsRemaining == 0) {
+        timer.cancel();
+      } else {
+        setState(() => _secondsRemaining--);
+      }
+    });
+  }
+
+  Future<void> _resendCode() async {
+    if (_secondsRemaining > 0) return;
+    
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.resetPassword(widget.email);
+      _startResendTimer();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Verification code resent!')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   Future<void> _verifyOtp() async {
+// ... existing code ...
     if (_otpController.text.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid 6-digit code')),
@@ -132,10 +174,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(
-                    _isOtpVerified ? Icons.lock_outline : Icons.mark_email_read_outlined,
-                    size: 80,
-                    color: Colors.green.shade600,
+                  Hero(
+                    tag: 'auth_logo',
+                    child: Icon(
+                      _isOtpVerified ? Icons.lock_outline : Icons.mark_email_read_outlined,
+                      size: 80,
+                      color: Colors.green.shade600,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -169,7 +214,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _verifyOtp(),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _secondsRemaining > 0 || _isLoading ? null : _resendCode,
+                        child: Text(
+                          _secondsRemaining > 0
+                              ? 'Resend code in ${_secondsRemaining}s'
+                              : 'Resend Code',
+                          style: TextStyle(
+                            color: _secondsRemaining > 0 ? Colors.grey : Colors.green.shade700,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     AuthButton(
                       text: 'Verify Code',
                       onPressed: _isLoading ? null : _verifyOtp,

@@ -30,6 +30,9 @@ class AuthTextField extends StatefulWidget {
 
 class _AuthTextFieldState extends State<AuthTextField> {
   bool _obscureText = true;
+  double _strength = 0.0;
+  Color _strengthColor = Colors.transparent;
+  String _strengthLabel = '';
 
   @override
   void initState() {
@@ -37,18 +40,68 @@ class _AuthTextFieldState extends State<AuthTextField> {
     _obscureText = widget.isPassword;
   }
 
+  void _calculateStrength(String value) {
+    if (!widget.isPassword || widget.label.toLowerCase().contains('confirm')) {
+      return;
+    }
+
+    double strength = 0;
+    if (value.isEmpty) {
+      strength = 0;
+    } else {
+      if (value.length >= 6) strength += 0.25;
+      if (value.length >= 10) strength += 0.25;
+      if (RegExp(r'[A-Z]').hasMatch(value)) strength += 0.25;
+      if (RegExp(r'[0-9!@#$%^&*(),.?":{}|<>]').hasMatch(value)) strength += 0.25;
+    }
+
+    setState(() {
+      _strength = strength;
+      if (strength <= 0.25) {
+        _strengthColor = Colors.red;
+        _strengthLabel = 'Weak';
+      } else if (strength <= 0.5) {
+        _strengthColor = Colors.orange;
+        _strengthLabel = 'Fair';
+      } else if (strength <= 0.75) {
+        _strengthColor = Colors.blue;
+        _strengthLabel = 'Good';
+      } else {
+        _strengthColor = Colors.green;
+        _strengthLabel = 'Strong';
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+            if (widget.isPassword &&
+                !widget.label.toLowerCase().contains('confirm') &&
+                widget.controller != null &&
+                widget.controller!.text.isNotEmpty)
+              Text(
+                _strengthLabel,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: _strengthColor,
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -58,6 +111,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
           validator: widget.validator,
           textInputAction: widget.textInputAction,
           onFieldSubmitted: widget.onFieldSubmitted,
+          onChanged: _calculateStrength,
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -100,6 +154,21 @@ class _AuthTextFieldState extends State<AuthTextField> {
             ),
           ),
         ),
+        if (widget.isPassword &&
+            !widget.label.toLowerCase().contains('confirm') &&
+            widget.controller != null &&
+            widget.controller!.text.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: _strength,
+              backgroundColor: Colors.grey.shade200,
+              valueColor: AlwaysStoppedAnimation<Color>(_strengthColor),
+              minHeight: 4,
+            ),
+          ),
+        ],
       ],
     );
   }

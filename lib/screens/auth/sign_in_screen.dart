@@ -96,8 +96,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Hero(
-                    tag: 'app_logo',
-                    child: Icon(Icons.eco, size: 80, color: Colors.green.shade600),
+                    tag: 'auth_logo',
+                    child: Icon(Icons.eco_outlined, size: 80, color: Colors.green.shade600),
                   ),
                   const SizedBox(height: 16),
                   const Text(
